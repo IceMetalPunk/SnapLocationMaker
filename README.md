@@ -1,0 +1,1 @@
+A simple webpage, in the style of SnapTracker's Marvel Snap custom card creator, that lets you create and download custom Marvel Snap locations (which weirdly have no support in any other custom card creator that I've found).
