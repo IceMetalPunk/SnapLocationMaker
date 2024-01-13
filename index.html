@@ -38,13 +38,29 @@
             display: flex;
             justify-content: center;
         }
+        h2 {
+            position: relative;
+        }
+        h2::before {
+            content: "";
+            position: absolute;
+            top: 100%;
+            width: 100%;
+            left: 0;
+            height: 2px;
+            border-radius: 2px;
+            background: linear-gradient(to right, transparent 0%, white 20%, white 80%, transparent 100%);
+        }
     </style>
 </head>
 
 <body>
     <section>
+        <h2 class="centered">Marvel Snap Location Maker</h2>
         <canvas id="area"></canvas><br>
-        <div class="centered"><div id="errorPlace"></div></div><br>
+        <div class="centered">
+            <div id="errorPlace"></div>
+        </div><br>
         <div class="centered"><input type="button" id="download" value="Download Location"></div><br>
         <div class="centered">
 
