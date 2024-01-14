@@ -145,23 +145,39 @@
                         img.src = url;
                     });
                 };
+                const getAllById = (...ids) => {
+                    return ids.map((id) => document.getElementById(id));
+                };
                 window.addEventListener('load', async () => {
                     let [offsetX, offsetY] = [0, 0];
                     let [prevX, prevY, touchId, mouseDown, prevDist, scaling] =
                         [0, 0, null, false, 0, false];
                     const bgImage = await loadImage('location_bg.webp');
                     let fgImage = await loadImage('blank_fg.webp');
-                    const nameBox = document.getElementById('name');
-                    const textBox = document.getElementById('text');
-                    const fgBox = document.getElementById('fgPicker');
-                    const clickPicker = document.getElementById('clickpicker');
-                    const canv = document.getElementById('area');
-                    const errorPlace = document.getElementById('errorPlace');
-                    const dlButton = document.getElementById('download');
-                    const scaleRange = document.getElementById('scale');
-                    const transparentBtn =
-                        document.getElementById('transparent');
-                    const fontSelector = document.getElementById('font');
+                    const [
+                        nameBox,
+                        textBox,
+                        fgBox,
+                        clickPicker,
+                        canv,
+                        errorPlace,
+                        dlButton,
+                        scaleRange,
+                        transparentBtn,
+                        fontSelector,
+                    ] = getAllById(
+                        'name',
+                        'text',
+                        'fgPicker',
+                        'clickpicker',
+                        'area',
+                        'errorPlace',
+                        'download',
+                        'scale',
+                        'transparent',
+                        'font'
+                    );
+
                     clickPicker.addEventListener('click', () => fgBox.click());
 
                     const fontOutlineWidthMap = {
