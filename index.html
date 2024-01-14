@@ -7,6 +7,14 @@
     <title>Marvel Snap Location Maker</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Anton">
     <style>
+        @font-face {
+            font-family: 'Mikodacs';
+            font-style: normal;
+            font-weight: 400;
+            src: url(MikodacsPCS.otf);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
         body {
             background-color: #10072b;
             color: #ffffff;
@@ -38,9 +46,11 @@
             display: flex;
             justify-content: center;
         }
+
         h2 {
             position: relative;
         }
+
         h2::before {
             content: "";
             position: absolute;
@@ -63,11 +73,17 @@
         </div><br>
         <div class="centered"><input type="button" id="download" value="Download Location"></div><br>
         <div class="centered">
-
-            <input type="text" placeholder="Name" id="name"><input type="button" id="clickpicker"
-                value="Select Art"><input type="file" id="fgPicker" accept="image/*"><label for="transparent"><input
-                    type="checkbox" checked id="transparent">Transparent Background?</label>
+            <input type="text" placeholder="Name" id="name">&nbsp;
+            <select id="font">
+                <option value="Anton">Font: Anton</option>
+                <option value="Mikodacs">Font: Mikodacs</option>
+            </select>
         </div><br>
+        <div class="centered">
+            <input type="button" id="clickpicker" value="Select Art"><input type="file" id="fgPicker"
+                accept="image/*"><label for="transparent"><input type="checkbox" checked id="transparent">Transparent
+                Background?</label>
+        </div>
         <div class="centered">
             Image Scale:
         </div>
@@ -100,9 +116,16 @@
                 const dlButton = document.getElementById('download');
                 const scaleRange = document.getElementById('scale');
                 const transparentBtn = document.getElementById('transparent');
+                const fontSelector = document.getElementById('font');
                 clickPicker.addEventListener('click', () => fgBox.click());
+
+                const fontOutlineWidthMap = {
+                    Mikodacs: 3,
+                    Anton: 2
+                };
+
                 const ctx = canv.getContext('2d');
-                const redraw = () => {
+                const redraw = async () => {
                     canv.width = 512;
                     canv.height = 512;
                     ctx.clearRect(0, 0, 512, 512);
@@ -128,16 +151,19 @@
                     ctx.drawImage(fgImage, offsetX, offsetY, w * Math.max(0.1, scaleRange.value / 100), h * Math.max(0.1, scaleRange.value / 100));
                     ctx.restore();
 
+                    const font = fontSelector.value;
+                    const outlineWidth = fontOutlineWidthMap[font];
                     // Title
                     ctx.fillStyle = '#ffffff';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'bottom';
-                    // const title = 'Location 1';
-                    const title = nameBox.value.replace(/(^|\W)([a-z])/g, (...args) => args[1] === "'" ? args[1] + args[2] : args[1] + args[2].toUpperCase());
                     let size = 36;
+                    ctx.font = `italic ${size}pt ${font}`;
+                    await document.fonts.load(ctx.font);
+                    const title = nameBox.value.replace(/(^|\W)([a-z])/g, (...args) => args[1] === "'" ? args[1] + args[2] : args[1] + args[2].toUpperCase());
                     let { width, fontBoundingBoxDescent, fontBoundingBoxAscent } = ctx.measureText(title);
                     do {
-                        ctx.font = `italic ${size}pt Anton`;
+                        ctx.font = `italic ${size}pt ${font}`;
                         const measure = ctx.measureText(title);
                         width = measure.width;
                         fontBoundingBoxDescent = measure.fontBoundingBoxDescent;
@@ -153,11 +179,12 @@
                     ctx.fillText(title, 250, 87 + height);
                     ctx.restore();
                     ctx.strokeStyle = '#000000';
-                    ctx.lineWidth = 2;
+                    ctx.lineWidth = outlineWidth;
                     ctx.strokeText(title, 250, 87 + height);
 
                     // Text
-                    ctx.font = 'italic 18pt Anton';
+                    ctx.font = `italic 18pt ${font}`;
+                    await document.fonts.load(ctx.font);
                     ctx.fillStyle = '#ffffff';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'top';
@@ -176,7 +203,7 @@
                         ctx.fillText(text, 250, canv.height - 180 - theight - tOffsetY);
                         ctx.restore();
                         ctx.strokeStyle = '#000000';
-                        ctx.lineWidth = 1;
+                        ctx.lineWidth = outlineWidth / 2;
                         ctx.strokeText(text, 250, canv.height - 180 - theight - tOffsetY);
                         tOffsetY -= theight - lineGap;
                     });
@@ -219,6 +246,7 @@
                     });
                     fr.readAsDataURL(file);
                 });
+                fontSelector.addEventListener('change', redraw);
                 nameBox.addEventListener('input', redraw);
                 textBox.addEventListener('input', redraw);
                 scaleRange.addEventListener('input', redraw);
